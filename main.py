@@ -38,6 +38,7 @@ class StockWiseApp(tk.Tk):
             ("Registrar Entrada de Produto", self.registrar_entrada),
             ("Registrar Saída de Produto", self.registrar_saida),
             ("Cadastrar Fornecedor", self.cadastro_fornecedor),
+            ("Visualizar Fornecedores", self.visualizar_fornecedores),
             ("Sair", self.quit)
         ]
 
@@ -99,7 +100,7 @@ class StockWiseApp(tk.Tk):
             for d in dados:
                 frame = tk.Frame(win, bg="white", pady=5, padx=5, relief=tk.RIDGE, bd=2)
                 frame.pack(pady=5, fill="x", padx=10)
-                alerta = " ESTOQUE BAIXO" if d[2] < 5 else ""
+                alerta = "  ⚠️ ESTOQUE BAIXO" if d[2] < 5 else ""
                 tk.Label(frame, text=f"Produto: {d[0]}{alerta}", bg="white", anchor="w", font=("Arial", 10, "bold")).pack(fill="x")
                 tk.Label(frame, text=f"Código: {d[1]}", bg="white", anchor="w").pack(fill="x")
                 tk.Label(frame, text=f"Quantidade: {d[2]}", bg="white", anchor="w").pack(fill="x")
@@ -187,6 +188,27 @@ class StockWiseApp(tk.Tk):
 
         tk.Button(win, text="Salvar", bg="#4CAF50", fg="white", command=salvar).pack(pady=15)
 
+    def visualizar_fornecedores(self):
+        win = tk.Toplevel(self)
+        win.title("Lista de Fornecedores")
+        win.geometry("400x500")
+        win.configure(bg="#E8E8E8")
+
+        conn, cursor = conectar()
+        cursor.execute("SELECT nome, cnpj, telefone, produtos FROM fornecedores")
+        dados = cursor.fetchall()
+        conn.close()
+
+        if dados:
+            for d in dados:
+                frame = tk.Frame(win, bg="white", pady=5, padx=5, relief=tk.RIDGE, bd=2)
+                frame.pack(pady=5, fill="x", padx=10)
+                tk.Label(frame, text=f"Fornecedor: {d[0]}", bg="white", anchor="w", font=("Arial", 10, "bold")).pack(fill="x")
+                tk.Label(frame, text=f"CNPJ: {d[1]}", bg="white", anchor="w").pack(fill="x")
+                tk.Label(frame, text=f"Telefone: {d[2]}", bg="white", anchor="w").pack(fill="x")
+                tk.Label(frame, text=f"Produtos: {d[3]}", bg="white", anchor="w").pack(fill="x")
+        else:
+            tk.Label(win, text="Nenhum fornecedor cadastrado ainda.", bg="#E8E8E8").pack(pady=20)
 
 if __name__ == "__main__":
     app = StockWiseApp()
